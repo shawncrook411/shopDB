@@ -24,6 +24,7 @@ CREATE TABLE ShopResult (
     StoreID SMALLINT UNSIGNED NOT NULL,
     Shift VARCHAR(20) CHECK (Shift IN ('LUNCH', 'DINNER', 'PHANTOM')) NOT NULL,
     Time VARCHAR(20) CHECK (Time IN ('11-1:30', '1:30-4', '4-7', '7-10')) NOT NULL,
+    TimeCode SMALLINT UNSIGNED CHECK (TimeCode <= 4),
     Type VARCHAR(20) CHECK (Type IN ('Regular', 'Online', 'Delivery', 'Call-In')) NOT NULL,
     Day DATE,
 
@@ -34,7 +35,8 @@ CREATE TABLE ShopResult (
     Score_Satisfaction SMALLINT UNSIGNED NOT NULL,
 
     Upsell BOOLEAN,
-    Ticket_Time BOOLEAN,
+    Ticket_Time varchar(20),
+    Small_Ticket_Time BOOLEAN,
     Large_Ticket_Time BOOLEAN,
     Fry_Quality BOOLEAN,
     Fry_Quantity BOOLEAN,
