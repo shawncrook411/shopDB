@@ -1,9 +1,9 @@
 import fitz as pdf
-import os
 import datetime
+from SQL_Table import SQL_Table
 
 
-class ShopSurvey():
+class ShopSurvey(SQL_Table):
     obj_file_path = 'data/shop_obj/'
     sql_file_path = 'sql_data/shops.sql'
     sql_table = 'ShopResult'

@@ -1,6 +1,7 @@
 import datetime
+from SQL_Table import SQL_Table
 
-class Employee:
+class Employee(SQL_Table):
     obj_file_path = 'data/crew_obj/'
     sql_file_path = 'sql_data/employee.sql'
     sql_table = 'Crew'

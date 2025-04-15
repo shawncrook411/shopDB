@@ -1,4 +1,6 @@
-class Store:
+from SQL_Table import SQL_Table
+
+class Store(SQL_Table):
     obj_file_path = 'data/store_obj/'
     sql_file_path = 'sql_data/store.sql'
     sql_table = 'Store'

@@ -1,12 +1,15 @@
 from ShopSurvey import ShopSurvey
 from Employee import Employee
 from Store import Store
+from SQL_Table import SQL_Table
 import datetime
 import pickle
 import os
 
 # TODO: Tie valid stores so they aren't hardcoded, into the Store obj files
 validStores = ["1626", "1515"]
+
+classes = [ShopSurvey, Store, Employee]
 
 def create_employee():
     try:
@@ -237,6 +240,7 @@ def write_obj(obj):
         print('PICKLE FAILURE, OBJ INVALID TYPE')
 
 def open_obj(folder_dir):
+    
     data = []
     for objID in os.listdir(folder_dir):
         with open(folder_dir + objID, 'rb') as file:
@@ -244,39 +248,22 @@ def open_obj(folder_dir):
             data.append(obj)
     return data
 
-def rewrite_sqls():
-    with open(ShopSurvey.sql_file_path, "w") as sql:
-        data = open_obj(ShopSurvey.obj_file_path)
-        sql.write(f"DELETE FROM {ShopSurvey.sql_table};\n\n")
-        for shop in data:
-            sql.write(shop.to_sql_insert())
+def rewrite_sqls():   
 
-    with open(Store.sql_file_path, "w") as sql:
-        data = open_obj(Store.obj_file_path)
-        sql.write(f"DELETE FROM {Store.sql_table};\n\n")
-        for store in data:
-            sql.write(store.to_sql_insert())
-
-    with open(Employee.sql_file_path, "w") as sql:
-        data = open_obj(Employee.obj_file_path)
-        sql.write(f"DELETE FROM {Employee.sql_table};\n\n")
-        for e in data:
-            sql.write(e.to_sql_insert())
+    for cls in classes:
+        with open(cls.sql_file_path, "w") as sql:
+            data = open_obj(cls.obj_file_path)
+            sql.write(f"DELETE FROM {cls.sql_table};\n\n")
+            for shop in data:
+                sql.write(shop.to_sql_insert())   
 
 def clean_data():
-    data = open_obj(Employee.obj_file_path)
-    for obj in data:
-        write_obj(obj)
-   
 
-    data = open_obj(ShopSurvey.obj_file_path)
-    for obj in data:    
-        write_obj(obj)
+    for cls in classes:
+        data = open_obj(cls.obj_file_path)
+        for obj in data:
+            write_obj(obj)
 
-    data = open_obj(Store.obj_file_path)
-    for s in data:
-        write_obj(s)
-    
 
 def main():
     

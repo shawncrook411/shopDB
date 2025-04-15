@@ -3,4 +3,5 @@
 /shop_txt
 /data
 /sql_data
-
+/__pycache__
+*.pyc
