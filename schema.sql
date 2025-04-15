@@ -4,6 +4,7 @@ USE SHOP;
 
 CREATE TABLE Store (
     StoreID SMALLINT UNSIGNED PRIMARY KEY,
+    Store_Name VARCHAR(20),
     General_Manager VARCHAR(20)    
 );
 
@@ -14,18 +15,17 @@ CREATE TABLE Crew (
     Manager BOOLEAN DEFAULT 0,
     StoreID SMALLINT UNSIGNED NOT NULL,
     HiredDate DATE DEFAULT (CURRENT_DATE),
-    Manager_Certify_Date DATE DEFAULT NULL,
+    Manager_Certify_Date DATE DEFAULT NULL
 
-    FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
+    -- FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
 );
 
 CREATE TABLE ShopResult (
-    ShopID SMALLINT UNSIGNED NOT NULL PRIMARY KEY,
+    ShopID INT UNSIGNED NOT NULL PRIMARY KEY,
     StoreID SMALLINT UNSIGNED NOT NULL,
     Shift VARCHAR(20) CHECK (Shift IN ('LUNCH', 'DINNER', 'PHANTOM')) NOT NULL,
-    Time VARCHAR(20) CHECK (Time IN ('11-1:30', '1:30-4', '4-7', '7-10')) NOT NULL,
     TimeCode SMALLINT UNSIGNED CHECK (TimeCode <= 4),
-    Type VARCHAR(20) CHECK (Type IN ('Regular', 'Online', 'Delivery', 'Call-In')) NOT NULL,
+    TypeCode SMALLINT DEFAULT 0,
     Day DATE,
 
     Score SMALLINT UNSIGNED NOT NULL,
@@ -43,11 +43,11 @@ CREATE TABLE ShopResult (
     Lobby_Clean BOOLEAN,
     Friendly_Greeting BOOLEAN,
 
-    Cashier VARCHAR(20),
+    Cashier VARCHAR(20)
 
-    FOREIGN KEY (Cashier) REFERENCES Crew(EmployeeID),
-    FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
+    -- FOREIGN KEY (Cashier) REFERENCES Crew(First_Name),
+    -- FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
 );
 
-ALTER TABLE Store
-ADD FOREIGN KEY (General_Manager) REFERENCES Crew(EmployeeID);
+-- ALTER TABLE Store
+-- ADD FOREIGN KEY (General_Manager) REFERENCES Crew(EmployeeID);
