@@ -4,8 +4,8 @@ import datetime
 
 
 class ShopSurvey():
-    obj_file_path = 'shop_obj/'
-    sql_file_path = 'data_shops.sql'
+    obj_file_path = 'data/shop_obj/'
+    sql_file_path = 'sql_data/shops.sql'
     sql_table = 'ShopResult'
     
     def __init__(self, file_name=None):

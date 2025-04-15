@@ -1,5 +1,6 @@
 from ShopSurvey import ShopSurvey
-from Employee import Store, Employee
+from Employee import Employee
+from Store import Store
 import datetime
 import pickle
 import os
@@ -263,28 +264,19 @@ def rewrite_sqls():
             sql.write(e.to_sql_insert())
 
 def clean_data():
-    # data = open_obj(ShopSurvey.obj_file_path)
-    # for shop in data:
-    #     print(shop)
+    data = open_obj(Employee.obj_file_path)
+    for obj in data:
+        write_obj(obj)
+   
 
-    # print()
+    data = open_obj(ShopSurvey.obj_file_path)
+    for obj in data:    
+        write_obj(obj)
 
-    # data = open_obj(ShopSurvey.obj_file_path)
-    # for e in data:
-     
-    #     hdate = e.day
-        
-    #     if hdate.year < 100:
-    #         e.day = hdate.replace(year=hdate.year + 2000)
-    #         print("Cleaned" + str(e))
-    #         write_obj(e)
-
-    # print()
-
-    # data = open_obj(Store.obj_file_path)
-    # for s in data:
-    #     print(s)
-    pass
+    data = open_obj(Store.obj_file_path)
+    for s in data:
+        write_obj(s)
+    
 
 def main():
     
