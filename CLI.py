@@ -49,7 +49,7 @@ def create_employee():
                 try:
                     value = input("\nWhat day did this employee get hired? Put in MM/DD/YY format: ")
                     value = value.split("/")
-                    employee.hired_date = datetime.datetime(int(value[2]), int(value[0]), int(value[1]))
+                    employee.hired_date = datetime.datetime(int(value[2]+2000), int(value[0]), int(value[1]))
                     break
                 except TypeError:
                     print("\nInvalid day type, please try Again\n")
@@ -62,7 +62,7 @@ def create_employee():
                 try:
                     value = input("\nWhat day did this manager certify? Put in MM/DD/YY format: ")
                     value = value.split("/")
-                    employee.cert_date = datetime.datetime(int(value[2]), int(value[0]), int(value[1]))
+                    employee.cert_date = datetime.datetime(int(value[2])+2000, int(value[0]), int(value[1]))
                     break
                 except TypeError:
                     print("\nInvalid day type, please try Again\n")       
@@ -224,7 +224,7 @@ def create_shop():
 
 
 def write_obj(obj):
-
+   
     if isinstance(obj, ShopSurvey):
         with open(f"{ShopSurvey.obj_file_path}{obj.shopID}", 'wb') as file:
             pickle.dump(obj, file)
@@ -240,7 +240,7 @@ def write_obj(obj):
         print('PICKLE FAILURE, OBJ INVALID TYPE')
 
 def open_obj(folder_dir):
-    
+
     data = []
     for objID in os.listdir(folder_dir):
         with open(folder_dir + objID, 'rb') as file:
@@ -263,6 +263,14 @@ def clean_data():
         data = open_obj(cls.obj_file_path)
         for obj in data:
             write_obj(obj)
+
+    data = open_obj(Employee.obj_file_path)
+    for obj in data:
+        if obj.manager:
+            if obj.cert_date.year < 100:
+                obj.cert_date = obj.cert_date.replace(year=(obj.cert_date.year + 2000))
+                print("Clean")
+                write_obj(obj)
 
 
 def main():
@@ -352,11 +360,13 @@ def main():
             continue
 
         if '6' in answer:
-            break
-        
+            break        
 
         if 'x' in answer:
             clean_data()
+
+        if 't' in answer:
+            print(issubclass(ShopSurvey, SQL_Table))
 
 
 
