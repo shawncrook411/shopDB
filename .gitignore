@@ -6,5 +6,6 @@
 /__pycache__
 *.pyc
 __pycache__
-!sql_data/schema.sql
-!sql_data/views.sql
+!/sql_data/schema.sql
+!/sql_data/views.sql
+!/sql_data/seed.sql
