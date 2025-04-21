@@ -2,7 +2,7 @@
 *.pdf
 /shop_txt
 /data
-/sql_data
+/sql_data/*
 /__pycache__
 *.pyc
 __pycache__
