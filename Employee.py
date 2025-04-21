@@ -62,15 +62,14 @@ class Employee(SQL_Table):
                 )  
             return "'NULL'"    
        
-        # Format bool fields
-        manager = convert_bool_to_null(self.manager)
-
+        
         # Format string fields
         id = convert_str_to_null(self.employeeID)
         first = convert_str_to_null(self.first) 
         last = convert_str_to_null(self.last)
 
         # Format numeric fields
+        manager = convert_int_to_null(self.manager)
         storeID = convert_int_to_null(self.storeID)
 
         if self.manager:

@@ -89,6 +89,7 @@ class ShopSurvey(SQL_Table):
         self.fry_quantity = True
         self.friendly_greeting = True
         self.lobby_clean = True
+        self.upsell = True
 
     def set_type_code(self, code):
         types = ['REGULAR', 'ONLINE', 'PHANTOM', 'DELIVERY', 'CURB-SIDE']

@@ -11,16 +11,13 @@ class Store(SQL_Table):
         else:
             raise ValueError
         
-        self.name = name
-        
-        self.gm = gm
+        self.name = name        
         self.employees = []
 
     def __str__(self):
         return (
             f"Store Information: "
             f"  StoreID: {self.storeID}"
-            f"  General Manager: {self.gm}"
         )
 
 
@@ -63,9 +60,9 @@ class Store(SQL_Table):
         # Build the SQL INSERT statement
         insert_statement = (
             f"INSERT INTO Store (\n"
-            f"StoreID, Store_Name, General_Manager"           
+            f"StoreID, Store_Name"           
             f") VALUES (\n"
-            f"    {storeID}, {name},{gm}"
+            f"    {storeID}, {name}"
             f");\n\n"
         )
         

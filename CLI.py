@@ -6,12 +6,11 @@ import datetime
 import pickle
 import os
 
-# TODO: Tie valid stores so they aren't hardcoded, into the Store obj files
-validStores = ["1626", "1515"]
+import mysql.connector
 
 classes = [ShopSurvey, Store, Employee]
 
-def create_employee():
+def create_employee(validStores):
     try:
         employee = Employee()
         value = input("What is the Employee ID: ").upper()
@@ -54,9 +53,12 @@ def create_employee():
                 except TypeError:
                     print("\nInvalid day type, please try Again\n")
 
-        value = input("Is this employee a manager? Press [1/t/True] or [2/f/False]\n")
-        if 't' in value or '1' in value:
-            employee.manager = True
+        value = input("Is this employee a manager? Press [1/t/True] or [2/f/False] or 3 for GM\n")
+        if 't' in value or '1' in value or '3' in value:
+            employee.manager = 1
+
+            if '3' in value: 
+                employee.manager = 2            
 
             while True:
                 try:
@@ -71,29 +73,36 @@ def create_employee():
 
     except ValueError as e:
         print(e)
+    except ValueError:
+        return create_employee(validStores)
 
 
-def create_shop():
+def create_shop(validStores, validEmployees):
     try:
         shop = ShopSurvey()       
-        value = input("What is the Shop ID: ")
         
-        if value in os.listdir(ShopSurvey.obj_file_path):
-            print("Shop ID is already used, duplicate error")
-            repeat = input("Did you want to re-create it?: ")
+        while True:
+            value = input("What is the Shop ID: ")
 
-            if 'n' in repeat.lower() or 'f' in repeat.lower():
-                return None
-        
-        shop.shopID = int(value)
+            if value in os.listdir(ShopSurvey.obj_file_path):
+                print("Shop ID is already used, duplicate error")
+                repeat = input("Did you want to re-create it?: ")
+
+                if 'n' in repeat.lower() or 'f' in repeat.lower():
+                    return None
+            
+            shop.shopID = int(value)
+            break
 
 
         while True:
-            value = input("What is the Store ID: ").strip()
+            value = int(input("What is the Store ID: "))
 
             if value in validStores:
                 shop.storeID = value
                 break
+            else:
+                print(f"Invalid StoreID given, Valid Stores : {validStores}")
 
         while True:
             value = int(input("\nWhat time was the Shop:\nPress 1 for 11-1:30\nPress 2 for 1:30-4\nPress 3 for 4-7\nPress 4 for 7-10\nPress 5 for Phantom\n"))
@@ -109,14 +118,41 @@ def create_shop():
 
         while True:
             try:
-                value = input("\nWhat day was this shop? Put in MM/DD/YY format: ")
+                value = input("\nWhat day was this shop? Put in MM/DD/YY format: ").strip()
                 value = value.split("/")
-                shop.day = datetime.datetime(int(value[2]+2000), int(value[0]), int(value[1]))
+
+                if int(value[2]) < 2000: 
+                    value[2] = int(value[2]) + 2000
+
+                shop.day = datetime.datetime(int(value[2]), int(value[0]), int(value[1]))
                 shop.weekday = shop.day.strftime("%A")
                 break
-            except TypeError:
+            except TypeError as e:
+                print(e)
                 print("\nInvalid day type, please try Again\n")
 
+        while True:
+                    try:
+                        value = float(input("What was the ticket time? Put in decimal notation, so 8.45 for 8 mins 45 seconds\n"))
+                        x = int(value * 100)
+                        y = int(value*100 % 100)
+                        x = (x // 100) + (y/60)
+
+                        shop.large_ticket_time = True
+                        shop.small_ticket_time = True
+
+                        if x >= 10:
+                            shop.large_ticket_time = False
+                            
+                        if x >= 8:
+                            shop.small_ticket_time = False
+
+                        shop.ticket_min = x
+                        shop.ticket_time = value
+                        break
+
+                    except ValueError:
+                        print("Invalid time value, please try again")
         
         while True:
             try:
@@ -125,8 +161,14 @@ def create_shop():
                 if value == 100:
                     shop.perfect()
 
-                    shop.cashier = input("Who was the Cashier?: ")
-                    return shop
+                    while True:
+                        value = input("Who was the Cashier?: ")
+
+                        for e in validEmployees:
+                            if value in e and shop.storeID in e:
+                                shop.cashier = e[-1]
+                                return shop      
+                        print("No Employee found with that first name, please try again\n")
                 
                 if 0 <= value < 100:
                     shop.score = value               
@@ -157,28 +199,6 @@ def create_shop():
             except TypeError:
                 print("\nInvalid types given, please Try Again\n")               
 
-        while True:
-            try:
-                value = float(input("What was the ticket time? Put in decimal notation, so 8.45 for 8 mins 45 seconds\n"))
-                x = int(value * 100)
-                y = int(value*100 % 100)
-                x = (x // 100) + (y/60)
-
-                shop.large_ticket_time = True
-                shop.small_ticket_time = True
-
-                if x >= 10:
-                    shop.large_ticket_time = False
-                    
-                if x >= 8:
-                    shop.small_ticket_time = False
-
-                shop.ticket_min = x
-                shop.ticket_time = value
-                break
-
-            except ValueError:
-                print("Invalid time value, please try again")
 
         value = input("\nWas upsell okay? [1/t/True] or [2/f/False]\n")        
         if 't' in value.lower() or '1' in value:
@@ -213,14 +233,50 @@ def create_shop():
         if value.lower() in ['1', 't', 'true']:
             shop.lobby_clean = True            
         else:
-            shop.lobby_clean = False           
+            shop.lobby_clean = False                   
         
-        shop.cashier = input("Who was the Cashier?: ")
+        while True:
+            value = input("Who was the Cashier?: ")
 
-        return shop
+            for e in validEmployees:
+                if value in e and shop.storeID in e:
+                    shop.cashier = e[-1].capitalize()
+                    return shop      
+            print("No Employee found with that first name, please try again\n")    
+
     
     except KeyboardInterrupt:
-        return None    
+        return None  
+    except ValueError as e:
+        print(e)
+        print("\n\n\tPlease Try again\n")
+        return create_shop(validStores, validEmployees)  
+    
+def populate_shops(validEmployees, validShops):
+    while True:
+        try:
+            while True:
+                value = input("What is the ShopID: ")
+
+                if value in validShops:
+                    shop = validShops.indexof(value)
+                    break
+
+                print("Invalid ShopID given, Please try again\n")
+
+            while True:
+                value = input("Which employeee (first_name) would you like to add?")                
+
+                for e in validEmployees:
+                    if value in e and shop[1] :
+                        shop.cashier = e[-1]
+                        return shop      
+                print("No Employee found with that first name, please try again\n")
+
+
+
+        except ValueError | TypeError as err:
+            print(err)
 
 
 def write_obj(obj):
@@ -266,24 +322,63 @@ def clean_data():
 
     data = open_obj(Employee.obj_file_path)
     for obj in data:
-        if obj.manager:
-            if obj.cert_date.year < 100:
-                obj.cert_date = obj.cert_date.replace(year=(obj.cert_date.year + 2000))
-                print("Clean")
-                write_obj(obj)
-
+        write_obj(obj)
+        
 
 def main():
+
+    shopConnection = mysql.connector.connect(
+        user='root',
+        password='root',
+        host='127.0.0.1',
+        database='shop',
+        auth_plugin='mysql_native_password'
+    )
+
+    cur  = shopConnection.cursor()
+
+    cur.execute("SELECT * FROM STORE")
+    rows = cur.fetchall()
+    
+    validStores = []
+    for row in rows:
+        validStores.append(row[0])
+
+    cur.execute("SELECT First_Name, StoreID, EmployeeID FROM CREW")
+    rows = cur.fetchall()
+
+    validEmployees = []
+    for row in rows:
+        validEmployees.append(row)
+
+    cur.execute("SELECT ShopID, StoreID FROM ShopResult")
+    rows = cur.fetchall()
+
+    validShops = []
+    for row in rows:
+        validShops.append(row)  
+    
     
     shops = []
     print("Welcome to Shop Survey CLI!\n")
     while True:
-        print("\nWhat would you like to do?\n1. Input new Shop\n2. Print saved obj files\n3. Re-create SQL file(s)\n4. Re-write Store(s)\n5. Input New Employee(s)\n6. Quit")
+        print( 
+            (
+                "   What would you like to do?\n"
+                "1. Input new Shop\n"
+                "2. Print saved obj files\n"
+                "3. Re-create SQL file(s)\n"
+                "4. Re-write Store(s)\n"
+                "5. Input New Employee(s)\n"
+                "6. Add Employees to Shop\n"
+                "7. Quit"
+            )
+        )
         answer = input()
         
         if '1' in answer:
             while True:
-                shop = create_shop()
+                shop = create_shop(validStores, validEmployees)
 
                 if isinstance(shop, ShopSurvey):
                     shops.append(shop)
@@ -329,11 +424,11 @@ def main():
             data = []
 
             data.append(
-                Store(1515, "Casper", "CHELSEY")
+                Store(1515, "Casper")
             )
 
             data.append(
-                Store(1626, "Cheyenne", "JESSICA")
+                Store(1626, "Cheyenne")
             )            
 
             for store in data:
@@ -341,7 +436,7 @@ def main():
             
         if '5' in answer:
             while True:
-                employee = create_employee()
+                employee = create_employee(validStores)
                 employees = []
 
                 if isinstance(employee, Employee):
@@ -355,11 +450,17 @@ def main():
                 continueBool = input("Would you like to create another?: ")
 
                 if 'n' in continueBool.lower():
+                    shopConnection.close()
                     break
 
             continue
 
         if '6' in answer:
+            populate_shops(validEmployees, validShops)
+
+
+
+        if '7' in answer:
             break        
 
         if 'x' in answer:

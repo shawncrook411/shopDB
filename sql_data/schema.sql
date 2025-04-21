@@ -4,20 +4,19 @@ USE SHOP;
 
 CREATE TABLE Store (
     StoreID SMALLINT UNSIGNED PRIMARY KEY,
-    Store_Name VARCHAR(20),
-    General_Manager VARCHAR(20)    
+    Store_Name VARCHAR(20)
 );
 
 CREATE TABLE Crew (
     EmployeeID VARCHAR(20) NOT NULL PRIMARY KEY,
     First_Name VARCHAR(20) NOT NULL,
     Last_Name VARCHAR(20) NOT NULL,
-    Manager BOOLEAN DEFAULT 0,
+    Manager SMALLINT UNSIGNED DEFAULT 0,
     StoreID SMALLINT UNSIGNED NOT NULL,
     HiredDate DATE DEFAULT (CURRENT_DATE),
-    Manager_Certify_Date DATE DEFAULT NULL
+    Manager_Certify_Date DATE DEFAULT NULL,    
 
-    -- FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
+    FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
 );
 
 CREATE TABLE ShopResult (
@@ -43,11 +42,17 @@ CREATE TABLE ShopResult (
     Lobby_Clean BOOLEAN,
     Friendly_Greeting BOOLEAN,
 
-    Cashier VARCHAR(20)
+    Cashier VARCHAR(20),
 
-    -- FOREIGN KEY (Cashier) REFERENCES Crew(First_Name),
-    -- FOREIGN KEY (StoreID) REFERENCES Store(StoreID)
+    FOREIGN KEY (StoreID) REFERENCES Store(StoreID),
+    FOREIGN KEY (Cashier) REFERENCES Crew(EmployeeID)
 );
 
--- ALTER TABLE Store
--- ADD FOREIGN KEY (General_Manager) REFERENCES Crew(EmployeeID);
+CREATE TABLE CrewShop (
+    ShopID INT UNSIGNED NOT NULL,
+    EmployeeID VARCHAR(20) NOT NULL,
+    Cashier BOOLEAN DEFAULT FALSE,
+
+    FOREIGN KEY (EmployeeID) REFERENCES Crew(EmployeeID),
+    FOREIGN KEY (ShopID) REFERENCES ShopResult(ShopID)
+)
